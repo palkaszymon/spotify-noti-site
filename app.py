@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from os import getenv
 from datetime import datetime
 from passlib.hash import sha512_crypt
+from passlib.utils import to_bytes, to_unicode
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
@@ -88,6 +89,15 @@ RETURN u.user_id, u.email, u.password
             return User(id=user[0][0], email=user[0][1], password=user[0][2])
         else: 
             return None
+    
+    def get_users_artists(tx, id):
+        result = tx.run("""
+MATCH (u:User {user_id: $id})--(a:Artist)
+RETURN a
+""", id=id)
+        names = [record.value('a')['artist_name'] for record in result]
+        return names
+    
 
 class SignupForm(FlaskForm):
     email = StringField(validators=[InputRequired(), Email('e')], render_kw={"placeholder": "E-mail"})
@@ -118,7 +128,7 @@ def login():
         with dbdriver.session() as session:
             user = session.execute_read(Neo4J.user_by_email, form.email.data)
             if user:
-                if sha512_crypt.verify(form.password.data, user.password):
+                if sha512_crypt.verify(form.password.data, to_unicode(user.password)):
                     if form.checkbox.data:
                         remember=True
                     else:
@@ -138,7 +148,7 @@ def signup():
         hashed_password = sha512_crypt.hash(form.password.data)
         email = form.email.data
         if email_unique(email):
-            new_user = User(id=None, email=email, password=hashed_password)
+            new_user = User(id=None, email=email, password=to_bytes(hashed_password))
             with dbdriver.session() as session:
                 session.execute_write(Neo4J.create_user, new_user)
                 log_user = session.execute_read(Neo4J.user_by_email, email)
@@ -157,10 +167,15 @@ def logout():
 def contact():
     return render_template('contact.html')
 
-@login_required
 @app.route('/artists', methods=['GET', 'POST'])
 def artists():
-    return render_template('artists.html')
+    if current_user.is_authenticated:
+        with dbdriver.session() as session:
+            artists = session.execute_read(Neo4J.get_users_artists, current_user.id)
+            return render_template('artists.html', artists=artists)
+    else:
+        return login_manager.unauthorized()
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
