@@ -1,0 +1,16 @@
+{% extends "layout.html.jinja" %}
+{% set formpage = True %}
+{% block content %}
+    <h1>Signup</h1>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ form.email }}
+        {{ form.password }}
+        {{ form.submit }}
+    </form>
+    {% for message in get_flashed_messages() %}
+        {{ message }}
+    {% endfor %}
+    <br>
+    <a href="{{url_for('login')}}">Already have an account? Log in here!</a>
+{% endblock %}
