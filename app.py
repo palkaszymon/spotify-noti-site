@@ -1,7 +1,7 @@
-from flask import Flask, render_template, url_for, redirect, flash
+from flask import Flask, render_template, url_for, redirect, flash, request
 from flask_wtf import FlaskForm
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import InputRequired, Length, Email
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
@@ -91,7 +91,7 @@ RETURN u.user_id, u.email, u.password
 
 class SignupForm(FlaskForm):
     email = StringField(validators=[InputRequired(), Email('e')], render_kw={"placeholder": "E-mail"})
-    password = PasswordField(validators=[InputRequired(), Length(min=8, max=32)], render_kw={"placeholder": "Password"})
+    password = PasswordField(validators=[InputRequired(), Length(min=8, max=32)], render_kw={"placeholder": "••••••••"})
     submit = SubmitField('Sign up')
 
 def email_unique(email):
@@ -103,8 +103,9 @@ def email_unique(email):
 
 class LoginForm(FlaskForm):
     email = StringField(validators=[InputRequired(), Email(message='Please enter an e-mail address in format: example@example.com')], render_kw={"placeholder": "E-mail"})
-    password = PasswordField(validators=[InputRequired(), Length(min=8, max=32)], render_kw={"placeholder": "Password"})
+    password = PasswordField(validators=[InputRequired(), Length(min=8, max=32)], render_kw={"placeholder": "••••••••"})
     submit = SubmitField('Log in')
+    checkbox = BooleanField('Remember')
 
 @app.route('/')
 def main():
@@ -118,7 +119,11 @@ def login():
             user = session.execute_read(Neo4J.user_by_email, form.email.data)
             if user:
                 if sha512_crypt.verify(form.password.data, user.password):
-                    login_user(user)
+                    if form.checkbox.data:
+                        remember=True
+                    else:
+                        remember=False
+                    login_user(user, remember)
                     return redirect(url_for('main'))
                 else:
                     flash('Wrong password.')
@@ -129,14 +134,16 @@ def login():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
-    
     if form.validate_on_submit():
-        hashed_password = sha512_crypt.encrypt(form.password.data)
-        if email_unique(form.email.data):
-            new_user = User(id=None, email=form.email.data, password=hashed_password)
+        hashed_password = sha512_crypt.hash(form.password.data)
+        email = form.email.data
+        if email_unique(email):
+            new_user = User(id=None, email=email, password=hashed_password)
             with dbdriver.session() as session:
                 session.execute_write(Neo4J.create_user, new_user)
-            return redirect(url_for('login'))
+                log_user = session.execute_read(Neo4J.user_by_email, email)
+            login_user(log_user, hashed_password)
+            return redirect(url_for('artists'))
         else:
             flash('This e-mail is already in use. Please choose another one.')
     return render_template('signup.html', form=form)
@@ -149,6 +156,11 @@ def logout():
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     return render_template('contact.html')
+
+@login_required
+@app.route('/artists', methods=['GET', 'POST'])
+def artists():
+    return render_template('artists.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

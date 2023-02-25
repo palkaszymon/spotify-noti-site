@@ -27,20 +27,6 @@
           </div>
         </div>
       </header>
-    {% if formpage == False %}
-        {% if current_user.is_authenticated %}
-            <div>
-                <a href="{{url_for('logout')}}">Log out</a>
-                {{ current_user.email }}
-            </div>
-        {% else %}
-            <div>
-                <a href="{{url_for('login')}}">Log in</a>
-                <a href="{{url_for('signup')}}">Sign up</a>
-            </div>
-        {% endif %}
-    {% endif %}
-
     {% block content %}
     missing content include
     {% endblock %}
