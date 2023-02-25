@@ -1,0 +1,12 @@
+{
+  "name": "flask-tailwind",
+  "scripts": {
+    "tw-build": "npx tailwindcss -i ./static/css/src/input.css -o ./static/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.2.7"
+  },
+  "dependencies": {
+    "flowbite": "^1.6.3"
+  }
+}

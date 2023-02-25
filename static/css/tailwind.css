@@ -1,0 +1,10 @@
+html, body {
+  background: linear-gradient(109.6deg, rgb(193, 98, 253) 11.2%, rgb(0, 49, 165) 91.1%);
+}
+
+#logo{
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-family: Raleway, sans-serif;
+  font-weight: 700;
+}

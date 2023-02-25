@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="font-Raleway font-medium bg-black" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/main.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/tailwind.css')}}" rel="stylesheet">
+
+    <title>Flask App</title>
+</head>
+<body>
+    <header class="body-font bg-black">
+        <div class="container mx-auto flex flex-wrap p-6 flex-col md:flex-row items-center text-lg">
+          <nav class="flex lg:w-2/5 flex-wrap items-center md:ml-auto">
+            <a href="{{url_for('contact')}}" class="inline-flex items-center border-0 py-1 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-4 md:mt-0">Contact</a>
+          </nav>
+          <a href="{{url_for('main')}}" class="flex order-first lg:order-none lg:w-1/5 title-font font-medium items-center text-white lg:items-center lg:justify-center mb-4 md:mb-0">
+            <span id="logo">Placeholder</span>
+          </a>
+          <div class="lg:w-2/5 inline-flex lg:justify-end ml-5 lg:ml-0">
+            <a class="inline-flex items-center border-0 py-1 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-4 md:mt-0" href="{{url_for('login')}}">Log in</a>
+            <a class="inline-flex items-center border-0 py-1 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-4 md:mt-0" href="{{url_for('signup')}}">Sign up</a>
+          </div>
+        </div>
+      </header>
+    {% if formpage == False %}
+        {% if current_user.is_authenticated %}
+            <div>
+                <a href="{{url_for('logout')}}">Log out</a>
+                {{ current_user.email }}
+            </div>
+        {% else %}
+            <div>
+                <a href="{{url_for('login')}}">Log in</a>
+                <a href="{{url_for('signup')}}">Sign up</a>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% block content %}
+    missing content include
+    {% endblock %}
+
+</body>
+</html>

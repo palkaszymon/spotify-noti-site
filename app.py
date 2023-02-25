@@ -1,18 +1,16 @@
 from flask import Flask, render_template, url_for, redirect, flash
-from flask_wtf.csrf import CSRFProtect
 from flask_wtf import FlaskForm
-from flask_bcrypt import Bcrypt
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, Email
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
 from os import getenv
 from datetime import datetime
+from passlib.hash import sha512_crypt
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
-bcrypt = Bcrypt(app)
 
 load_dotenv()
 URI = getenv('NEO4J_URI')
@@ -110,7 +108,7 @@ class LoginForm(FlaskForm):
 
 @app.route('/')
 def main():
-    return render_template('main.html.jinja')
+    return render_template('main.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -119,21 +117,21 @@ def login():
         with dbdriver.session() as session:
             user = session.execute_read(Neo4J.user_by_email, form.email.data)
             if user:
-                if bcrypt.check_password_hash(user.password, form.password.data):
+                if sha512_crypt.verify(form.password.data, user.password):
                     login_user(user)
                     return redirect(url_for('main'))
                 else:
                     flash('Wrong password.')
             else:
                 flash('No account associated with that e-mail.')
-    return render_template('login.html.jinja', form=form)
+    return render_template('login.html', form=form)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
     
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        hashed_password = sha512_crypt.encrypt(form.password.data)
         if email_unique(form.email.data):
             new_user = User(id=None, email=form.email.data, password=hashed_password)
             with dbdriver.session() as session:
@@ -141,12 +139,16 @@ def signup():
             return redirect(url_for('login'))
         else:
             flash('This e-mail is already in use. Please choose another one.')
-    return render_template('signup.html.jinja', form=form)
+    return render_template('signup.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     logout_user()
     return redirect(url_for('main'))
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    return render_template('contact.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
