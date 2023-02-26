@@ -6,7 +6,9 @@ module.exports = {
     extend: {},
     fontFamily: {
       'Raleway': ["Raleway", 'sans-serif']
-    }
+    },
+    variants: {
+      outline: ["focus"],
+    },
   },
-  plugins: [require("flowbite/plugin")],
 }

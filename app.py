@@ -9,6 +9,7 @@ from os import getenv
 from datetime import datetime
 from passlib.hash import sha512_crypt
 from passlib.utils import to_bytes, to_unicode
+import json
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
@@ -95,9 +96,23 @@ RETURN u.user_id, u.email, u.password
 MATCH (u:User {user_id: $id})--(a:Artist)
 RETURN a
 """, id=id)
-        names = [record.value('a')['artist_name'] for record in result]
-        return names
+        return [node['a'] for node in [record.data('a') for record in result]]
     
+    def get_artist_latest(tx, id):
+        result = tx.run("""
+MATCH (a:Artist {artist_id: $id})--(al:Album)
+WITH max(al.release_date) as max, a as a
+MATCH (al:Album)--(a) WHERE al.release_date=max
+RETURN al
+""", id=id)
+        return [node['al'] for node in [record.data('al') for record in result]]
+    
+    def get_all_artists(tx):
+        result = tx.run("""
+MATCH (a:Artist)
+RETURN a.artist_name AS name
+""")
+        return [record['name'] for record in result]
 
 class SignupForm(FlaskForm):
     email = StringField(validators=[InputRequired(), Email('e')], render_kw={"placeholder": "E-mail"})
@@ -172,10 +187,22 @@ def artists():
     if current_user.is_authenticated:
         with dbdriver.session() as session:
             artists = session.execute_read(Neo4J.get_users_artists, current_user.id)
-            return render_template('artists.html', artists=artists)
+            artist_list = [{'artist': artist, 'newest': newest} for artist in artists for newest in session.execute_read(Neo4J.get_artist_latest, artist['artist_id'])]
+            return render_template('artists.html', artists=artist_list)
     else:
         return login_manager.unauthorized()
-    
+
+@app.route('/artists/add', methods=['GET', 'POST'])
+def add():
+    if current_user.is_authenticated:
+        with dbdriver.session() as session:
+            data = session.execute_read(Neo4J.get_all_artists)
+        return render_template('add.html', data=json.dumps(data))
+    else:
+        return login_manager.unauthorized()
 
 if __name__ == '__main__':
     app.run(debug=True)
+    # with dbdriver.session() as session:
+    #     print()
+    # dbdriver.close()

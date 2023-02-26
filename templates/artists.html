@@ -1,8 +1,50 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Artists</h1>
-    {% if artists %}
-    <h2>will be artist list
-    </h2>
-    {% endif %}
+<!-- <h1>Artists</h1>
+{% for artist in artists %}
+<h2>{{artist}}</h2>
+{% endfor %} -->
+{% if artists %}
+
+<section>
+<div class="mx-auto flex flex-col items-center justify-center px-2 md:px-6 py-8 md:h-screen lg:py-0 w-full">
+    <div class="flex">
+    <div class="justify-center items-center mx-auto pb-16 pt-4 xl:pt-0">
+        <a href="{{url_for('add')}}" class="bg-black hover:bg-gray-900 text-white font-bold py-4 px-8 border-b-4 border-gray-900 hover:border-gray-800 justify-center rounded">Add new artists</a>
+    </div>
+</div>
+
+    <div class="p-4 bg-white rounded-lg border shadow-md sm:p-8 dark:bg-gray-800 dark:border-gray-700 mx-auto w-full md:w-3/4 xl:w-3/5  text-black">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-2xl font-bold leading-none">Your artists</h3>
+            <h3 class="text-base font-semibold">Latest music</h3>
+        </div>
+        <div class="flow-root">
+            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                {% for artist in artists %}
+                <li class="py-3 sm:py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xl font-semibold truncate">
+                                {{ artist['artist']['artist_name'] }}
+                            </p>
+                        </div>
+                        <div class="flex-col items-center text-xs md:text-base font-semibold">
+                            <div class="items-end">{{ artist['newest']['name'] }}</div>
+                            <div class="float-right">{{ artist['newest']['release_date'] }}</div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+        </div>
+    </div>
+</div>
+</section>
+{% else %}
+<div class="flex">
+    <div class="justify-center items-center mx-auto pt-48 md:pt-96">
+        <a href="{{url_for('add')}}" class="bg-black hover:bg-gray-900 text-white font-bold py-4 px-8 border-b-4 border-gray-900 hover:border-gray-800 justify-center rounded">Add new artists</a>
+    </div>
+
+{% endif %}
 {% endblock %}
