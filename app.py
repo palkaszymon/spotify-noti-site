@@ -10,6 +10,9 @@ from datetime import datetime
 from passlib.hash import sha512_crypt
 from passlib.utils import to_bytes, to_unicode
 import json
+from base64 import b64encode
+from requests import get, post
+from urllib.parse import quote
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
@@ -18,6 +21,8 @@ load_dotenv()
 URI = getenv('NEO4J_URI')
 USERNAME= getenv('NEO4J_USERNAME')
 PASSWORD = getenv('NEO4J_PASSWORD')
+CLIENT_ID = getenv('CLIENT_ID')
+CLIENT_SECRET = getenv('CLIENT_SECRET')
 
 dbdriver = GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD))
 
@@ -29,6 +34,33 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     with dbdriver.session() as session:
         return session.execute_read(Neo4J.user_by_id, user_id)
+
+class Spotify():
+    def get_oauth_token(self):
+        auth_string = CLIENT_ID + ':' + CLIENT_SECRET
+        auth_b64 = str(b64encode(auth_string.encode('UTF-8')), 'UTF-8')
+        url = 'https://accounts.spotify.com/api/token'
+        headers = {
+            "Authorization": "Basic " + auth_b64,
+            "Content-Type" : "application/x-www-form-urlencoded"
+        }
+        data = {"grant_type": "client_credentials"}
+
+        result = post(url, headers=headers, data=data)
+        return json.loads(result.content)['access_token']
+
+    def get_response_data(self, name):
+        url = f"https://api.spotify.com/v1/search?query={name}&type=artist&market=PL"
+        response = get(url, data=None, headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.get_oauth_token()}"
+        })
+        return response.json()
+    
+    def artist_search(self, name):
+        data = self.get_response_data(quote(name))['artists']['items'][0]
+        return {'artist_name': data['name'], 'artist_id': data['id'], 'img_url': data['images'][1]['url']}
 
 class User():
     def __init__(self, email, password, id):
@@ -90,12 +122,26 @@ RETURN u.user_id, u.email, u.password
             return User(id=user[0][0], email=user[0][1], password=user[0][2])
         else: 
             return None
+   
+    @staticmethod
+    def create_artist(tx, artist):
+        result = tx.run("""                       
+MATCH (u:User {user_id: $user_id})
+MERGE (a:Artist {artist_id: $artist_id, artist_name: $artist_name, img_url: $img_url})
+MERGE (u)-[:FOLLOWS]->(a)
+""", user_id=current_user.id, artist_id=artist['artist_id'], artist_name=artist['artist_name'], img_url=artist['img_url'])
+        
+    def create_user_artist_rel(tx, artist_name):
+        result = tx.run("""                       
+MATCH (u:User {user_id: $user_id}), (a:Artist {artist_name: $artist_name})
+MERGE (u)-[:FOLLOWS]->(a)
+""", user_id=current_user.id, artist_name=artist_name)
     
-    def get_users_artists(tx, id):
+    def get_users_artists(tx):
         result = tx.run("""
 MATCH (u:User {user_id: $id})--(a:Artist)
 RETURN a
-""", id=id)
+""", id=current_user.id)
         return [node['a'] for node in [record.data('a') for record in result]]
     
     def get_artist_latest(tx, id):
@@ -118,6 +164,10 @@ class SignupForm(FlaskForm):
     email = StringField(validators=[InputRequired(), Email('e')], render_kw={"placeholder": "E-mail"})
     password = PasswordField(validators=[InputRequired(), Length(min=8, max=32)], render_kw={"placeholder": "••••••••"})
     submit = SubmitField('Sign up')
+
+class ArtistForm(FlaskForm):
+    artist = StringField(render_kw={"placeholder": "Search for artist..."})
+    submit = SubmitField('Add')
 
 def email_unique(email):
     status = True
@@ -186,7 +236,7 @@ def contact():
 def artists():
     if current_user.is_authenticated:
         with dbdriver.session() as session:
-            artists = session.execute_read(Neo4J.get_users_artists, current_user.id)
+            artists = session.execute_read(Neo4J.get_users_artists)
             artist_list = [{'artist': artist, 'newest': newest} for artist in artists for newest in session.execute_read(Neo4J.get_artist_latest, artist['artist_id'])]
             return render_template('artists.html', artists=artist_list)
     else:
@@ -196,13 +246,27 @@ def artists():
 def add():
     if current_user.is_authenticated:
         with dbdriver.session() as session:
-            data = session.execute_read(Neo4J.get_all_artists)
-        return render_template('add.html', data=json.dumps(data))
+            form = ArtistForm()
+            names = session.execute_read(Neo4J.get_all_artists)
+            users_artists = session.execute_read(Neo4J.get_users_artists)
+            count = len(users_artists)
+            if form.validate_on_submit():
+                artist = form.artist.data
+                if count <20:
+                    if artist not in names:
+                        new_artist = Spotify().artist_search(form.artist.data)
+                        session.execute_write(Neo4J.create_artist, new_artist)
+                    else:
+                        session.execute_write(Neo4J.create_user_artist_rel, artist)
+                    count+=1
+                    flash(f"{artist} added succesfully!")
+                else:
+                    flash(f"You can't add more artists. Right now the user limit is 20.")
+            return render_template('add.html', form=form, data=json.dumps(names), users_artists=users_artists, count=count)
     else:
         return login_manager.unauthorized()
 
 if __name__ == '__main__':
     app.run(debug=True)
     # with dbdriver.session() as session:
-    #     print()
     # dbdriver.close()

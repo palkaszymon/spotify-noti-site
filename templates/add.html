@@ -1,29 +1,52 @@
 {% extends "layout.html" %}
 {% block content %}
-
-
-<div class="max-w-sm">
-    <form autocomplete="off">
-        <label for="input" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-        <div class="relative">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
+<div class="flex flex-col items-center justify-center px-6 py-8 mx-auto pt-24 lg:pt-48">
+    <div class="w-full rounded-lg shadow dark:border md:mt-0 sm:max-w-md bg-white xl:p-0">
+        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <h1 class="text-xl font-bold leading-tight tracking-tight text-black md:text-2xl">
+                Add artists
+            </h1>
+            <h1 class="font-bold leading-tight tracking-tight text-black text-base">
+                You currently follow {{ count }} artists
+            </h1>
+            <div class="px-0">
+                <h3 class="text-xs">If the artist you're trying to add is not autocompleting, please enter his name free of mistakes as seen on Spotify.</h3>
+                <form autocomplete="off" method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    <label for="input" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                            {{ form.artist(class="!outline-none !focus:ring-transparent !focus:outline-none block w-full p-4 pl-10 text-sm outline-transparent", id="input")}}
+                        <!-- <input type="text" id="input"
+                            class="!outline-none !focus:ring-transparent !focus:outline-none block w-full p-4 pl-10 text-sm outline-transparent "
+                            placeholder="Search for artist..." required> -->
+                        <div class="buttonpad">
+                            {{ form.submit(class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer") }}
+                        </div>
+                    </div>
+                </form>
+                <div>
+                    <ul class="list"></ul>
+                </div>
+                {% if get_flashed_messages() %}
+                <div>
+                    {% for message in get_flashed_messages() %}
+                        {{ message }}
+                    {% endfor %}
+                {% endif %}
             </div>
-            <input type="text" id="input"
-                class="!outline-none !focus:ring-transparent !focus:outline-none block w-full p-4 pl-10 text-sm text-gray-900 border-gray-300 outline-transparent bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Search for your favorite artist..." required>
-            <button type="submit"
-                class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
         </div>
-    </form>
-    <div>
-        <ul class="list"></ul>
     </div>
 </div>
+
+
+
 
 
 <script>

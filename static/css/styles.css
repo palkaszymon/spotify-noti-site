@@ -39,3 +39,13 @@ line-height: 1.25rem;
 width: 100%; 
 border-color: #D1D5DB; 
 }
+
+.white{
+	background-color: #fff;
+	border: none;
+	outline: none;
+}
+
+.buttonpad{
+	padding-top: 2px;
+}

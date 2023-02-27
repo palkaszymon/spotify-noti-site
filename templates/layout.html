@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="{{url_for('static',filename='css/main.css')}}" rel="stylesheet">
-  <link href="{{url_for('static',filename='css/tailwind.css')}}" rel="stylesheet">
+  <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
 
   <title>Flask App</title>
 </head>
@@ -17,7 +17,7 @@
 <body>
   <header class="body-font bg-black">
     <div class="container mx-auto flex flex-wrap p-2 md:p-6 flex-col md:flex-row items-center text-xl">
-      <nav class="flex lg:w-2/5 flex-wrap items-center md:ml-auto">
+      <nav class="flex lg:w-2/5 flex-wrap items-center md:ml-auto pb-2">
         <a href="{{url_for('contact')}}"
           class="inline-flex items-center border-0 py-1 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4">Contact</a>
         <a href="{{url_for('artists')}}"
@@ -30,7 +30,7 @@
       <div class="lg:w-2/5 inline-flex lg:justify-end ml-0">
         {% if current_user.is_authenticated %}
         <div>
-          <a class="inline-flex items-center border-0 py-1 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4"
+          <a class="inline-flex items-center border-0 px-3 pb-2 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4"
             href="{{url_for('logout')}}">Log out</a>
         </div>
         {% else %}
