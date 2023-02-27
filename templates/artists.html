@@ -24,14 +24,16 @@
                 {% for artist in artists %}
                 <li class="py-3 sm:py-4">
                     <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-1.jpg" alt="Neil image">
+                        </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-xl font-semibold truncate">
                                 {{ artist['artist']['artist_name'] }}
                             </p>
                         </div>
                         <div class="flex-col items-center text-xs md:text-base font-semibold">
-                            <div class="items-end">{{ artist['newest']['name'] }}</div>
-                            <div class="float-right">{{ artist['newest']['release_date'] }}</div>
+
                         </div>
                     </div>
                 </li>
