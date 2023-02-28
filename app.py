@@ -88,23 +88,12 @@ def contact():
 
 @app.route('/artists', methods=['GET', 'POST'])
 
-#TODO: FIGURE OUT EMPTY LIST SOLUTION
 def artists():
     if current_user.is_authenticated:
         with dbdriver.session() as session:
             artists = session.execute_read(Neo4J.get_users_artists)
-            # artist_list = [{'artist': artist, 'newest': newest} for artist in artists for newest in session.execute_read(Neo4J.get_artist_latest, artist['artist_id'])]
-            artist_list = [{'artist': artist} for artist in artists]
-            for artist in artists:
-                try:
-                    current = SpotifyArtist(artist['artist_id'])
-                    curr = current.get_final_items()
-                    print(curr)
-                    if curr == []:
-                        print(current.response)
-                except ValueError as error:
-                        print('Empty list error')
-
+            artist_list = [{'artist': artist, 'newest': newest} for artist in artists for newest in session.execute_read(Neo4J.get_artist_latest, artist['artist_id'])]
+            print(artist_list)
             return render_template('artists.html', artists=artist_list)
     else:
         return login_manager.unauthorized()
@@ -122,7 +111,10 @@ def add():
                 if count <20:
                     if artist not in names:
                         new_artist = Spotify().artist_search(form.artist.data)
+                        id = new_artist['artist_id']
                         session.execute_write(Neo4J.create_artist, new_artist)
+                        for album in SpotifyArtist(id).get_final_items():
+                            session.execute_write(Neo4J.create_album, album, id)
                     else:
                         session.execute_write(Neo4J.create_user_artist_rel, artist)
                     count+=1
@@ -137,4 +129,3 @@ if __name__ == '__main__':
     app.run(debug=True)
     # with dbdriver.session() as session:
     # dbdriver.close()
-    # print(SpotifyArtist('62k5LKMhymqlDNo2DWOvvv').get_final_items())

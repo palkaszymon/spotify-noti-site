@@ -11,16 +11,16 @@
                     {{ form.hidden_tag() }}
                     <div>
                         <label for="email" class="block mb-2">Your email</label>
-                        <div >{{ form.email(class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500") }}</div>
+                        <div >{{ form.email(class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 0") }}</div>
                     </div>
                     <div>
                         <label for="password" class="block mb-2">Password</label>
-                        <div >{{ form.password(class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500") }}</div>
+                        <div >{{ form.password(class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ") }}</div>
                     </div>
                     <div class="flex items-center justify-between">
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
-                                {{form.checkbox(class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800")}}
+                                {{form.checkbox(class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 ")}}
                             </div>
                             <div class="ml-3 text-sm">
                               <label class="">Remember me</label>
@@ -28,7 +28,7 @@
                         </div>
                         
                     </div>
-                    {{ form.submit(class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 bg-slate-900 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 cursor-pointer") }}
+                    {{ form.submit(class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 bg-slate-900 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer") }}
                     <p class="font-medium text-base">
                         Don't have an account yet? <a href="#" class="text-primary-600 hover:underline dark:text-primary-500">Sign up here!</a>
                         {% if get_flashed_messages() %}

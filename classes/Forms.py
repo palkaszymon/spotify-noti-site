@@ -14,5 +14,5 @@ class LoginForm(FlaskForm):
     checkbox = BooleanField('Remember')
 
 class ArtistForm(FlaskForm):
-    artist = StringField(render_kw={"placeholder": "Search for artist..."})
+    artist = StringField(validators=[InputRequired()], render_kw={"placeholder": "Search for artist..."})
     submit = SubmitField('Add')

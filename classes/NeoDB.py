@@ -74,6 +74,7 @@ MATCH (a:Artist {artist_id: $id})--(al:Album)
 WITH max(al.release_date) as max, a as a
 MATCH (al:Album)--(a) WHERE al.release_date=max
 RETURN al
+LIMIT 1
 """, id=id)
         return [node['al'] for node in [record.data('al') for record in result]]
     
@@ -84,3 +85,12 @@ MATCH (a:Artist)
 RETURN a.artist_name AS name
 """)
         return [record['name'] for record in result]
+    
+    staticmethod
+    def create_album(tx, album, artist_id):
+        result = tx.run("""
+MATCH (a:Artist {artist_id: $artist_id})
+MERGE (al:Album {id: $album_id, name: $name, release_date: $release_date, type: $type})
+MERGE (al)-[:ALBUM_OF]-(a)
+""", artist_id=artist_id, album_id=album['id'], name=album['name'], release_date=album['release_date'], type=album['type'])
+        return result

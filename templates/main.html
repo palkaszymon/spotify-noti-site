@@ -1,4 +1,56 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1 class=>Main app</h1>
+<div class="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
+    <div class="max-w-xl mb-10 md:mx-auto sm:text-center lg:max-w-2xl md:mb-12">
+      <div>
+        <p class="inline-block px-3 py-px mb-4 text-base tracking-wider font-semibold text-gray-800 uppercase rounded-full bg-teal-accent-400">
+          Try the
+        </p>
+      </div>
+      <h2 class="max-w-2xl mb-6 font-sans text-4xl font-bold leading-none tracking-tight sm:text-5xl md:mx-auto text-white">
+        New music notification app
+      </h2>
+      <p class="text-xl text-gray-800 font-medium md:text-2xl">
+        Never miss your favorite artist's release again
+      </p>
+    </div>
+    <div class="grid gap-4 row-gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="flex flex-col justify-between p-5">
+        <div>
+          <h6 class="mb-2 font-bold leading-5 text-xl text-white">Create an account</h6>
+          <p class="mb-3 text-lg font-medium">
+            Sign up now to start using the app. Just provide your e-mail that we will send notifications to, and a secure password and you're done!
+          </p>
+        </div>
+        <a href="{{url_for('signup')}}" aria-label="" class="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800">Start here</a>
+      </div>
+      <div class="flex flex-col justify-between p-5">
+        <div>
+          <h6 class="mb-2 font-bold leading-5 text-xl text-white">Add artists</h6>
+          <p class="mb-3 text-lg">
+            Add (at the moment max. 20) of your favorite artists to your account and start following them! You can view them in the Artists tab.
+          </p>
+        </div>
+        <a href="{{url_for('add')}}" aria-label="" class="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800">Add</a>
+      </div>
+      <div class="flex flex-col justify-between p-5">
+        <div>
+          <h6 class="mb-2 font-bold leading-5 text-xl text-white">Get notified</h6>
+          <p class="mb-3 text-lg">
+            Our service checks Spotify regularly, to search for any new releases. After finding them, you get notified via e-mail!
+          </p>
+        </div>
+        <a href="{{url_for('artists')}}" aria-label="" class="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800">Check your artists</a>
+      </div>
+      <div class="flex flex-col justify-between p-5">
+        <div>
+          <h6 class="mb-2 font-bold leading-5 text-xl text-white">Suggestions</h6>
+          <p class="mb-3 text-lg">
+            As I developed this app simply as a side-project, it might contain bugs or lack features. If you want to help me develop this app, use the contact page.
+          </p>
+        </div>
+        <a href="{{url_for('contact')}}" aria-label="" class="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800">Contact me</a>
+      </div>
+    </div>
+  </div>
 {% endblock %}

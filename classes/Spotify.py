@@ -54,7 +54,14 @@ class SpotifyArtist(Spotify):
     # Sorts the albums by release date descending, and returns the newest 3
     def get_final_items(self):
         albums = sorted(self.get_items(), key = lambda x: datetime.strptime(self.check_date(x['release_date']), '%Y-%m-%d'), reverse=True)
-        return [albums[i] for i in range(len(albums)-1) if albums[i]['name'] != albums[i+1]['name']][:3]
+        if len(albums) != 2:
+            filter_dupes =  [albums[i] for i in range(len(albums)-1) if albums[i]['name'] != albums[i+1]['name']][:3]
+        else:
+            if albums[0]['name'] != albums[1]['name']:
+                filter_dupes = albums[:2]
+            else:
+                filter_dupes = albums[:1]
+        return filter_dupes
     
     @staticmethod
     def check_date(date_text):
