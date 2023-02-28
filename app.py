@@ -93,7 +93,6 @@ def artists():
         with dbdriver.session() as session:
             artists = session.execute_read(Neo4J.get_users_artists)
             artist_list = [{'artist': artist, 'newest': newest} for artist in artists for newest in session.execute_read(Neo4J.get_artist_latest, artist['artist_id'])]
-            print(artist_list)
             return render_template('artists.html', artists=artist_list)
     else:
         return login_manager.unauthorized()
@@ -121,6 +120,7 @@ def add():
                     flash(f"{artist} added succesfully!")
                 else:
                     flash(f"You can't add more artists. Right now the user limit is 20.")
+                return redirect(url_for('add'))
             return render_template('add.html', form=form, data=json.dumps(names), users_artists=users_artists, count=count)
     else:
         return login_manager.unauthorized()
