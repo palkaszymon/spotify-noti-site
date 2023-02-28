@@ -113,7 +113,7 @@ def add():
                         id = new_artist['artist_id']
                         session.execute_write(Neo4J.create_artist, new_artist)
                         for album in SpotifyArtist(id).get_final_items():
-                            session.execute_write(Neo4J.create_album, album, id)
+                            session.execute_write(Neo4J.create_album, album)
                     else:
                         session.execute_write(Neo4J.create_user_artist_rel, artist)
                     count+=1
@@ -127,5 +127,3 @@ def add():
 
 if __name__ == '__main__':
     app.run(debug=True)
-    # with dbdriver.session() as session:
-    # dbdriver.close()

@@ -86,11 +86,18 @@ RETURN a.artist_name AS name
 """)
         return [record['name'] for record in result]
     
-    staticmethod
-    def create_album(tx, album, artist_id):
-        result = tx.run("""
-MATCH (a:Artist {artist_id: $artist_id})
-MERGE (al:Album {id: $album_id, name: $name, release_date: $release_date, type: $type})
-MERGE (al)-[:ALBUM_OF]-(a)
-""", artist_id=artist_id, album_id=album['id'], name=album['name'], release_date=album['release_date'], type=album['type'])
+    @staticmethod
+    def create_album(tx, album):
+        result = tx.run(
+"""
+MERGE (al:Album {name: $name, type: $type, release_date: $release_date, id: $id})
+WITH $artist_list as x
+UNWIND x as l
+MERGE (a:Artist {artist_name: l.artist_name, artist_id: l.artist_id})
+WITH l
+MATCH (a:Artist {artist_id: l.artist_id}), (al:Album {id: $id})
+MERGE (al)-[:ALBUM_OF]->(a)
+""",
+    name=album['name'], type=album['type'], release_date= album['release_date'], id=album['id'], artist_list=album['artists']
+    )
         return result
