@@ -49,6 +49,7 @@ RETURN u.user_id, u.email, u.password
         result = tx.run("""                       
 MATCH (u:User {user_id: $user_id})
 MERGE (a:Artist {artist_id: $artist_id, artist_name: $artist_name, img_url: $img_url})
+SET a.check = True
 MERGE (u)-[:FOLLOWS]->(a)
 """, user_id=current_user.id, artist_id=artist['artist_id'], artist_name=artist['artist_name'], img_url=artist['img_url'])
 
