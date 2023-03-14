@@ -104,7 +104,6 @@ def add():
             form = ArtistForm()
             names = session.execute_read(Neo4J.get_all_artists)
             users_artists = [d.get('artist_name', None) for d in session.execute_read(Neo4J.get_users_artists)]
-            print(users_artists)
             count = len(users_artists)
             if form.validate_on_submit():
                 artist = form.artist.data
