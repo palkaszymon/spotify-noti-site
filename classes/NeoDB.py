@@ -56,14 +56,15 @@ MERGE (u)-[:FOLLOWS]->(a)
     @staticmethod  
     def create_user_artist_rel(tx, artist_name):
         result = tx.run("""                       
-MATCH (u:User {user_id: $user_id}), (a:Artist {artist_name: $artist_name})
+MATCH (u:User {user_id: $user_id}), (a:Artist)
+WHERE toLower(a.artist_name) = $artist_name
 MERGE (u)-[:FOLLOWS]->(a)
-""", user_id=current_user.id, artist_name=artist_name)
+""", user_id=current_user.id, artist_name=artist_name.lower())
     
     @staticmethod
     def get_users_artists(tx):
         result = tx.run("""
-MATCH (u:User {user_id: $id})--(a:Artist)
+MATCH (u:User {user_id: $id})-[:FOLLOWS]->(a:Artist)
 RETURN a
 """, id=current_user.id)
         return [node['a'] for node in [record.data('a') for record in result]]
@@ -71,9 +72,9 @@ RETURN a
     @staticmethod
     def get_artist_latest(tx, id):
         result = tx.run("""
-MATCH (a:Artist {artist_id: $id})--(al:Album)
+MATCH (a:Artist {artist_id: $id})<-[:ALBUM_OF]-(al:Album)
 WITH max(al.release_date) as max, a as a
-MATCH (al:Album)--(a) WHERE al.release_date=max
+MATCH (al:Album)-[:ALBUM_OF]->(a) WHERE al.release_date=max
 RETURN al
 LIMIT 1
 """, id=id)

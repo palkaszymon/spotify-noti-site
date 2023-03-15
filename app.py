@@ -103,12 +103,13 @@ def add():
         with dbdriver.session() as session:
             form = ArtistForm()
             names = session.execute_read(Neo4J.get_all_artists)
+            names_lower = [name.lower() for name in session.execute_read(Neo4J.get_all_artists)]
             users_artists = [d.get('artist_name', None) for d in session.execute_read(Neo4J.get_users_artists)]
             count = len(users_artists)
             if form.validate_on_submit():
                 artist = form.artist.data
                 if count <20:
-                    if artist not in names:
+                    if artist.lower() not in names_lower:
                         new_artist = Spotify().artist_search(form.artist.data)
                         id = new_artist['artist_id']
                         session.execute_write(Neo4J.create_artist, new_artist)
@@ -116,7 +117,8 @@ def add():
                             session.execute_write(Neo4J.create_album, album)
                         flash(f"{artist} added succesfully!")
                     else:
-                        if artist in users_artists:
+                        users_artists_lower = [d.get('artist_name', None).lower() for d in session.execute_read(Neo4J.get_users_artists)]
+                        if artist.lower() in users_artists_lower:
                             flash("You already follow this artist!")
                         else:
                             session.execute_write(Neo4J.create_user_artist_rel, artist)
