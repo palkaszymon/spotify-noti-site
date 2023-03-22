@@ -92,7 +92,9 @@ def artists():
     if current_user.is_authenticated:
         with dbdriver.session() as session:
             artists = session.execute_read(Neo4J.get_users_artists)
-            artist_list = [{'artist': artist, 'newest': newest} for artist in artists for newest in session.execute_read(Neo4J.get_artist_latest, artist['artist_id'])]
+            artist_list = sorted(
+            [{'artist': artist, 'newest': newest} for artist in artists for newest in session.execute_read(Neo4J.get_artist_latest, artist['artist_id'])],
+            key =lambda d: d['newest']['release_date'], reverse=True)
             return render_template('artists.html', artists=artist_list)
     else:
         return login_manager.unauthorized()
