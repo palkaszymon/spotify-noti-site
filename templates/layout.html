@@ -20,9 +20,9 @@
     <div class="container mx-auto flex flex-wrap p-2 md:p-6 flex-col md:flex-row items-center text-xl">
       <nav class="flex lg:w-2/5 flex-wrap items-center md:ml-auto pb-2">
         <a href="{{url_for('contact')}}"
-          class="inline-flex items-center border-0 py-1 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4">Contact</a>
+          class="inline-flex items-center border-0 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4">Contact</a>
         <a href="{{url_for('artists')}}"
-          class="inline-flex items-center border-0 py-1 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4">Artists</a>
+          class="inline-flex items-center border-0 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4">Artists</a>
       </nav>
       <a href="{{url_for('main')}}"
         class="flex order-first lg:order-none lg:w-1/5 title-font font-medium items-center text-white lg:items-center lg:justify-center my-2 md:my-0">
@@ -31,14 +31,14 @@
       <div class="lg:w-2/5 inline-flex lg:justify-end ml-0">
         {% if current_user.is_authenticated %}
         <div>
-          <a class="inline-flex items-center border-0 px-3 pb-2 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4"
+          <a class="inline-flex items-center border-0 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4"
             href="{{url_for('logout')}}">Log out</a>
         </div>
         {% else %}
-        <div>
-          <a class="inline-flex items-center border-0 py-1 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4"
+        <div class="flex lg:w-2/5 flex-wrap items-center md:ml-auto">
+          <a class="inline-flex items-center border-0 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4"
             href="{{url_for('login')}}">Log in</a>
-          <a class="inline-flex items-center border-0 py-1 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4"
+          <a class="inline-flex items-center border-0 px-3 focus:outline-none text-white hover:bg-gray-900 transition duration-150 rounded mt-0 md:mt-4"
             href="{{url_for('signup')}}">Sign up</a>
         </div>
         {% endif %}

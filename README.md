@@ -6,7 +6,7 @@
 Up and running, check it out [here](http://18.194.38.73)
 
 ## Technologies used
-Flask, Python, Jinja, TailwindCSS, Docker, AWS ECS & EC2, Neo4J AuraDB
+Flask, Python, Jinja, TailwindCSS, Docker, AWS ECR & EC2, Neo4J AuraDB
 <br>
 
 ## About
