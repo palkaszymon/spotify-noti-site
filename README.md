@@ -1,4 +1,4 @@
-# Notifymusic Web APP
+# Notifymusic Web App
 
 ## This repo contains a Flask app of my Notifymusic side project
 
